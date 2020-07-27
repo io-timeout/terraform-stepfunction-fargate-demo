@@ -35,7 +35,7 @@
       "Catch": [
           {
             "ErrorEquals": [ "States.ALL" ],
-            "Next": "Execution Failed",
+            "Next": "Send Failure Notification",
             "ResultPath": "$.error"
           }
       ]
@@ -43,7 +43,7 @@
     "Execution Succeeded": {
       "Type": "Succeed"
     },
-    "Execution Failed": {
+    "Send Failure Notification": {
       "Type": "Task",
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
@@ -65,7 +65,12 @@
           }
         }
       },
-      "End": true
+      "Next": "Execution Failed"
+    },
+    "Execution Failed": {
+      "Type": "Fail",
+      "Cause": "Failed: ${task_definition_arn}",
+      "Error": "The Fargate task could not be executed or returned a non-zero exit code."
     }
   }
 }
